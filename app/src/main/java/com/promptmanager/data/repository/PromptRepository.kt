@@ -104,25 +104,58 @@ class PromptRepository(private val promptDao: PromptDao) {
     }
 
     /**
-     * Prompt duplizieren.
-     * Erstellt eine Kopie mit "(Kopie)" im Titel.
+     * Erstellt eine neue Version eines bestehenden Prompts.
      *
-     * @return Die ID des duplizierten Prompts
+     * @param originalPromptId ID des Original-Prompts
+     * @param newContent Neuer Prompt-Inhalt
+     * @param incrementMinor true = minor version (1.0 -> 1.1), false = major (1.0 -> 2.0)
+     * @return Die ID der neuen Version
      */
-    suspend fun duplicatePrompt(promptId: Long): Long? {
-        val original = getPromptById(promptId) ?: return null
+    suspend fun createNewVersion(
+        originalPromptId: Long,
+        newTitle: String? = null,
+        newDescription: String? = null,
+        newContent: String,
+        newCategory: String? = null,
+        incrementMinor: Boolean = true
+    ): Long? {
+        val original = getPromptById(originalPromptId) ?: return null
         val now = System.currentTimeMillis()
 
-        val duplicate = original.copy(
-            id = 0, // Neue ID wird von Room generiert
-            title = "${original.title} (Kopie)",
+        // Berechne neue Versionsnummer
+        val currentVersion = original.version
+        val newVersion = incrementVersion(currentVersion, incrementMinor)
+
+        val newPrompt = original.copy(
+            id = 0, // Neue ID
+            title = newTitle ?: original.title,
+            description = newDescription ?: original.description,
+            content = newContent,
+            category = newCategory ?: original.category,
             createdAt = now,
             updatedAt = now,
             usageCount = 0,
-            isFavorite = false
+            version = newVersion,
+            parentId = original.parentId ?: original.id // Falls Original schon eine Version ist
         )
 
-        return insertPrompt(duplicate)
+        return insertPrompt(newPrompt)
+    }
+
+    /**
+     * Incrementiert eine Versionsnummer.
+     * Format: "major.minor"
+     */
+    private fun incrementVersion(currentVersion: String, minor: Boolean): String {
+        val parts = currentVersion.split(".").map { it.toIntOrNull() ?: 0 }
+        val major = parts.getOrNull(0) ?: 1
+        val minorNum = parts.getOrNull(1) ?: 0
+
+        return if (minor) {
+            "$major.${minorNum + 1}"
+        } else {
+            "${major + 1}.0"
+        }
     }
 
     // ============ UTILITY OPERATIONS ============
@@ -170,7 +203,32 @@ class PromptRepository(private val promptDao: PromptDao) {
             createdAt = now,
             updatedAt = now,
             isFavorite = isFavorite,
-            usageCount = 0
+            usageCount = 0,
+            version = "1.0",
+            parentId = null
         )
+    }
+
+    // ============ VERSIONING OPERATIONS ============
+
+    /**
+     * Lädt alle Versionen eines Prompts.
+     */
+    fun getPromptVersions(promptId: Long): Flow<List<PromptEntity>> {
+        return promptDao.getPromptVersions(promptId)
+    }
+
+    /**
+     * Zählt Versionen eines Prompts.
+     */
+    suspend fun getVersionCount(promptId: Long): Int {
+        return promptDao.getVersionCount(promptId)
+    }
+
+    /**
+     * Lädt die neueste Version eines Prompts.
+     */
+    suspend fun getLatestVersion(promptId: Long): PromptEntity? {
+        return promptDao.getLatestVersion(promptId)
     }
 }
