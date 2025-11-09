@@ -107,4 +107,34 @@ interface PromptDao {
      */
     @Query("DELETE FROM prompts")
     suspend fun deleteAllPrompts()
+
+    // ============ VERSIONING OPERATIONS ============
+
+    /**
+     * Alle Versionen eines Prompts laden (inkl. Original).
+     * Original hat parentId=NULL, Versionen haben parentId=originalId.
+     */
+    @Query("""
+        SELECT * FROM prompts
+        WHERE id = :promptId OR parentId = :promptId
+        ORDER BY createdAt DESC
+    """)
+    fun getPromptVersions(promptId: Long): Flow<List<PromptEntity>>
+
+    /**
+     * Prüft ob ein Prompt Versionen hat.
+     */
+    @Query("SELECT COUNT(*) FROM prompts WHERE parentId = :promptId")
+    suspend fun getVersionCount(promptId: Long): Int
+
+    /**
+     * Lädt die neueste Version eines Prompts.
+     */
+    @Query("""
+        SELECT * FROM prompts
+        WHERE id = :promptId OR parentId = :promptId
+        ORDER BY createdAt DESC
+        LIMIT 1
+    """)
+    suspend fun getLatestVersion(promptId: Long): PromptEntity?
 }

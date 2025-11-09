@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,11 +14,11 @@ import kotlinx.coroutines.launch
  * Room Database für die Prompt Manager App.
  *
  * Version 1: Initiales Schema mit PromptEntity.
- * Migrations werden hier hinzugefügt wenn das Schema sich ändert.
+ * Version 2: Versionierungs-System (version, parentId)
  */
 @Database(
     entities = [PromptEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -28,6 +29,20 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
+        /**
+         * Migration von Version 1 zu 2: Versionierungs-System.
+         */
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "ALTER TABLE prompts ADD COLUMN version TEXT NOT NULL DEFAULT '1.0'"
+                )
+                database.execSQL(
+                    "ALTER TABLE prompts ADD COLUMN parentId INTEGER DEFAULT NULL"
+                )
+            }
+        }
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -35,6 +50,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "prompt_manager_database"
                 )
+                    .addMigrations(MIGRATION_1_2)
                     .addCallback(DatabaseCallback())
                     .build()
                 INSTANCE = instance
@@ -106,12 +122,14 @@ Gib konkrete Verbesserungsvorschläge mit Code-Beispielen.""",
 
                 PromptEntity(
                     title = "Social Media Post",
-                    description = "Kreativer Post für verschiedene Plattformen",
-                    content = """Erstelle einen ansprechenden Social Media Post für [Plattform=LinkedIn] zum Thema: [Thema=Produktlaunch]
+                    description = "Kreativer Post für verschiedene Plattformen - mit Dropdown-Auswahl",
+                    content = """Erstelle einen ansprechenden Social Media Post für [Plattform=LinkedIn,Twitter,Instagram,Facebook] zum Thema: [Thema=Produktlaunch]
 
 Zielgruppe: [Zielgruppe=Entwickler und Tech-Enthusiasten]
 
-Tonalität: [Tonalität=professionell aber nahbar]
+Tonalität: [Tonalität=professionell,nahbar,enthusiastisch,sachlich]
+
+Sprache: [Sprache=Deutsch,Englisch,Französisch]
 
 Call-to-Action: [CTA=Mehr erfahren]
 

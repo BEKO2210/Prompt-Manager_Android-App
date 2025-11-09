@@ -1,5 +1,6 @@
 package com.promptmanager.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -8,22 +9,27 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.promptmanager.domain.model.Placeholder
+import com.promptmanager.domain.model.PlaceholderType
 import com.promptmanager.util.PlaceholderParser
 
 /**
  * Dynamischer Dialog zum Ausfüllen von Platzhaltern.
  *
- * Funktionsweise:
- * 1. Parsed den promptContent und extrahiert alle Platzhalter
- * 2. Erstellt für jeden Platzhalter ein TextField (Duplikate werden nur 1x angezeigt)
- * 3. Defaults werden aus dem Platzhalter übernommen
- * 4. Bei Bestätigung: Platzhalter werden ersetzt und finaler Prompt wird zurückgegeben
+ * Neue Features:
+ * - Dropdown-Support für kommagetrennte Optionen
+ * - Farbliche Markierung in Preview (rot=leer, grün=gefüllt)
+ * - Vollständig scrollbare Preview
  *
- * @param promptTitle Titel des Prompts (für Anzeige)
+ * @param promptTitle Titel des Prompts
  * @param promptContent Der Prompt-Text mit [Platzhaltern]
  * @param onDismiss Callback beim Abbrechen
  * @param onConfirm Callback beim Bestätigen mit ausgefülltem Prompt
@@ -44,14 +50,19 @@ fun PlaceholderDialog(
     // State: Map von Key -> Benutzereingabe
     val values = remember(placeholders) {
         mutableStateMapOf<String, String>().apply {
-            placeholders.forEach { this[it.key] = it.defaultValue }
+            placeholders.forEach {
+                this[it.key] = when (it.type) {
+                    PlaceholderType.DROPDOWN -> "" // Leere Auswahl
+                    else -> it.defaultValue
+                }
+            }
         }
     }
 
-    // Preview des ausgefüllten Prompts
-    val preview by remember {
+    // Preview-Segmente mit Farbmarkierung
+    val previewSegments by remember {
         derivedStateOf {
-            PlaceholderParser.createPreview(promptContent, values)
+            PlaceholderParser.createAnnotatedPreview(promptContent, values)
         }
     }
 
@@ -92,11 +103,13 @@ fun PlaceholderDialog(
                         }
                     },
                     actions = {
-                        // "Defaults wiederherstellen"-Button
                         IconButton(
                             onClick = {
                                 placeholders.forEach { ph ->
-                                    values[ph.key] = ph.defaultValue
+                                    values[ph.key] = when (ph.type) {
+                                        PlaceholderType.DROPDOWN -> ""
+                                        else -> ph.defaultValue
+                                    }
                                 }
                             }
                         ) {
@@ -114,45 +127,45 @@ fun PlaceholderDialog(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     if (placeholders.isEmpty()) {
-                        // Kein Platzhalter -> Direkt kopieren
                         Text(
-                            text = "Dieser Prompt enthält keine Platzhalter und kann direkt verwendet werden.",
+                            text = "Dieser Prompt enthält keine Platzhalter.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     } else {
-                        // Für jeden Platzhalter ein Eingabefeld
                         placeholders.forEach { placeholder ->
                             PlaceholderInputField(
-                                label = placeholder.key,
+                                placeholder = placeholder,
                                 value = values[placeholder.key] ?: "",
-                                onValueChange = { values[placeholder.key] = it },
-                                defaultValue = placeholder.defaultValue,
-                                isMultiLine = placeholder.isMultiLine
+                                onValueChange = { values[placeholder.key] = it }
                             )
                         }
 
                         Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                        // ========== PREVIEW ==========
+                        // ========== FARBLICHE PREVIEW ==========
                         Text(
-                            text = "Vorschau:",
+                            text = "Live-Vorschau:",
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.primary
                         )
+
                         Card(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 100.dp, max = 300.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant
                             )
                         ) {
-                            Text(
-                                text = preview,
-                                modifier = Modifier.padding(12.dp),
-                                style = MaterialTheme.typography.bodySmall,
-                                maxLines = 10,
-                                overflow = TextOverflow.Ellipsis
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .verticalScroll(rememberScrollState())
+                                    .padding(12.dp)
+                            ) {
+                                ColoredPreviewText(segments = previewSegments)
+                            }
                         }
                     }
                 }
@@ -189,78 +202,134 @@ fun PlaceholderDialog(
 }
 
 /**
- * Einzelnes Eingabefeld für einen Platzhalter.
+ * Eingabefeld für einen Platzhalter - unterstützt TEXT, MULTILINE_TEXT und DROPDOWN.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PlaceholderInputField(
-    label: String,
+    placeholder: Placeholder,
     value: String,
-    onValueChange: (String) -> Unit,
-    defaultValue: String,
-    isMultiLine: Boolean
+    onValueChange: (String) -> Unit
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            label = { Text(label) },
-            modifier = Modifier.fillMaxWidth(),
-            minLines = if (isMultiLine) 3 else 1,
-            maxLines = if (isMultiLine) 8 else 1,
-            supportingText = if (defaultValue.isNotEmpty() && value != defaultValue) {
-                { Text("Standard: $defaultValue", style = MaterialTheme.typography.labelSmall) }
-            } else null
-        )
+    when (placeholder.type) {
+        PlaceholderType.DROPDOWN -> {
+            // Dropdown-Menü
+            var expanded by remember { mutableStateOf(false) }
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = it }
+            ) {
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = {},
+                    label = { Text(placeholder.key) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(),
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = if (value.isBlank())
+                            MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+                        else
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+                    )
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    placeholder.options.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option.ifBlank { "(leer)" }) },
+                            onClick = {
+                                onValueChange(option)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        PlaceholderType.MULTILINE_TEXT -> {
+            // Multiline TextField
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValueChange,
+                label = { Text(placeholder.key) },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                maxLines = 8,
+                supportingText = if (placeholder.defaultValue.isNotEmpty() && value != placeholder.defaultValue) {
+                    { Text("Standard: ${placeholder.defaultValue.take(50)}...", style = MaterialTheme.typography.labelSmall) }
+                } else null,
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = if (value.isBlank())
+                        MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+                    else
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+                )
+            )
+        }
+
+        PlaceholderType.TEXT -> {
+            // Normales TextField
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValueChange,
+                label = { Text(placeholder.key) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                supportingText = if (placeholder.defaultValue.isNotEmpty() && value != placeholder.defaultValue) {
+                    { Text("Standard: ${placeholder.defaultValue}", style = MaterialTheme.typography.labelSmall) }
+                } else null,
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = if (value.isBlank())
+                        MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+                    else
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+                )
+            )
+        }
     }
 }
 
 /**
- * Minimale Variante ohne Preview (für einfachere Use-Cases).
+ * Zeigt Preview-Text mit farblicher Markierung der Platzhalter.
+ * Rot = leer, Grün = gefüllt (dezent).
  */
 @Composable
-fun SimplePlaceholderDialog(
-    placeholders: List<com.promptmanager.domain.model.Placeholder>,
-    onDismiss: () -> Unit,
-    onConfirm: (Map<String, String>) -> Unit
-) {
-    val values = remember {
-        mutableStateMapOf<String, String>().apply {
-            placeholders.forEach { this[it.key] = it.defaultValue }
+private fun ColoredPreviewText(segments: List<PlaceholderParser.PreviewSegment>) {
+    val annotatedString = buildAnnotatedString {
+        segments.forEach { segment ->
+            if (segment.isPlaceholder) {
+                // Platzhalter: Rot wenn leer, Grün wenn gefüllt
+                withStyle(
+                    style = SpanStyle(
+                        background = if (segment.isFilled)
+                            Color(0x4000C853) // Dezentes Grün (alpha=25%)
+                        else
+                            Color(0x40F44336), // Dezentes Rot (alpha=25%)
+                        color = if (segment.isFilled)
+                            Color(0xFF00C853) // Dunkelgrün
+                        else
+                            Color(0xFFF44336) // Dunkelrot
+                    )
+                ) {
+                    append(segment.text)
+                }
+            } else {
+                // Normaler Text
+                append(segment.text)
+            }
         }
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Parameter eingeben") },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                placeholders.forEach { placeholder ->
-                    OutlinedTextField(
-                        value = values[placeholder.key] ?: "",
-                        onValueChange = { values[placeholder.key] = it },
-                        label = { Text(placeholder.key) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = !placeholder.isMultiLine
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = { onConfirm(values) }) {
-                Text("Fertig")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Abbrechen")
-            }
-        }
+    Text(
+        text = annotatedString,
+        style = MaterialTheme.typography.bodySmall
     )
 }
