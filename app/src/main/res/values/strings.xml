@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Prompt Manager</string>
+
+    <!-- Main Screen -->
+    <string name="search_prompts">Prompts durchsuchen…</string>
+    <string name="no_prompts">Keine Prompts vorhanden</string>
+    <string name="add_prompt">Prompt hinzufügen</string>
+
+    <!-- Detail Screen -->
+    <string name="title">Titel</string>
+    <string name="description">Beschreibung (optional)</string>
+    <string name="prompt_content">Prompt-Text</string>
+    <string name="category">Kategorie</string>
+    <string name="save">Speichern</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="delete">Löschen</string>
+    <string name="duplicate">Duplizieren</string>
+    <string name="test_and_copy">Testen &amp; kopieren</string>
+
+    <!-- Placeholder Dialog -->
+    <string name="fill_placeholders">Parameter für Prompt</string>
+    <string name="done">Fertig</string>
+    <string name="prompt_copied">Prompt kopiert</string>
+    <string name="share">Teilen</string>
+
+    <!-- Categories -->
+    <string name="category_email">E-Mail</string>
+    <string name="category_dev">Entwicklung</string>
+    <string name="category_social">Social Media</string>
+    <string name="category_business">Business</string>
+    <string name="category_other">Sonstiges</string>
+
+    <!-- Actions -->
+    <string name="use_prompt">Nutzen</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="mark_favorite">Favorit markieren</string>
+
+    <!-- Filters -->
+    <string name="all">Alle</string>
+    <string name="favorites">Favoriten</string>
+    <string name="sort_by_name">Nach Name</string>
+    <string name="sort_by_date">Nach Datum</string>
+    <string name="sort_by_usage">Nach Nutzung</string>
+</resources>
