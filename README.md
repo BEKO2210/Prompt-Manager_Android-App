@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="https://img.shields.io/badge/Kotlin-1.9.20-purple?logo=kotlin&logoColor=white" />
+  <img src="https://img.shields.io/badge/Jetpack%20Compose-UI-blue?logo=android&logoColor=white" />
+  <img src="https://img.shields.io/badge/Room-Database-orange" />
+  <img src="https://img.shields.io/badge/Gradle-8.2.0-02303A?logo=gradle&logoColor=white" />
+  <img src="https://img.shields.io/badge/Android%20Studio-Hedgehog-green?logo=androidstudio&logoColor=white" />
+</p>
+
+
 # Prompt Manager - Android App
 
 **Professioneller Prompt-Manager für Android mit dynamischen Platzhaltern**
@@ -10,10 +19,10 @@ Eine moderne Android-App zum Verwalten, Anpassen und Nutzen von KI-Prompts mit d
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/BEKO2210/Prompt-Manager_Android-App/main/assets/Live_preview%20(1).jpg" width="19%">
-  <img src="https://raw.githubusercontent.com/BEKO2210/Prompt-Manager_Android-App/main/assets/Live_preview%20(2).jpg" width="19%">
   <img src="https://raw.githubusercontent.com/BEKO2210/Prompt-Manager_Android-App/main/assets/Live_preview%20(3).jpg" width="19%">
   <img src="https://raw.githubusercontent.com/BEKO2210/Prompt-Manager_Android-App/main/assets/Live_preview%20(4).jpg" width="19%">
   <img src="https://raw.githubusercontent.com/BEKO2210/Prompt-Manager_Android-App/main/assets/Live_preview%20(5).jpg" width="19%">
+  <img src="https://raw.githubusercontent.com/BEKO2210/Prompt-Manager_Android-App/main/assets/Live_preview%20(2).jpg" width="19%">
 </p>
 
 
