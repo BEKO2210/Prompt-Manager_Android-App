@@ -45,6 +45,45 @@ Eine moderne Android-App zum Verwalten, Anpassen und Nutzen von KI-Prompts mit d
 - **Share-Funktionalität**: Teile Prompts mit anderen Apps
 - **Template-Galerie**: 5 vorgefertigte Beispiel-Prompts beim ersten Start
 
+### 🆕 Erweiterte Features (Neu!)
+
+#### Dropdown-Unterstützung für Platzhalter
+- **Kommagetrennte Optionen**: `[Sprache=Deutsch,Englisch,Französisch]`
+- Automatische Dropdown-Erkennung bei 2+ Optionen
+- Leere Option wird automatisch hinzugefügt
+- Perfekt für vordefinierte Auswahlmöglichkeiten (Plattformen, Sprachen, Tonalitäten)
+
+**Beispiel:**
+```
+[Plattform=LinkedIn,Twitter,Instagram,Facebook]
+[Tonalität=professionell,nahbar,enthusiastisch,sachlich]
+```
+
+#### Farbliche Live-Preview
+- **Rot markiert**: Leere Platzhalter (dezent, 25% alpha)
+- **Grün markiert**: Ausgefüllte Platzhalter (dezent, 25% alpha)
+- **Vollständig scrollbar**: Zeigt immer den kompletten Prompt
+- **Real-time Update**: Ändert sich live während der Eingabe
+
+#### Versionierungs-System
+- **Versions-Tracking**: Jeder Prompt hat eine Versionsnummer (z.B. "1.0", "1.1", "2.0")
+- **Version-Chains**: Versionen sind über `parentId` verknüpft
+- **Minor/Major Updates**: Automatische Inkrementierung
+  - Minor: 1.0 → 1.1 (kleine Änderungen)
+  - Major: 1.0 → 2.0 (große Überarbeitungen)
+- **Versions-Historie**: Alle Versionen eines Prompts einsehbar
+- **Rückverfolgbarkeit**: Jederzeit zu älteren Versionen zurückkehren
+
+#### Intelligente Platzhalter-Typen
+- **TEXT**: Normales einzeiliges TextField
+- **MULTILINE_TEXT**: Mehrzeiliges TextArea (bei Texten > 60 Zeichen oder Zeilenumbrüchen)
+- **DROPDOWN**: Dropdown-Menü (bei 2+ kommagetrennten Optionen)
+
+#### Visuelles Feedback
+- **Farbige Eingabefelder**: Leicht rot getönt wenn leer, grün wenn gefüllt
+- **Standard-Wert-Anzeige**: Zeigt ursprünglichen Default als Hinweistext
+- **Validierungs-Feedback**: Sofortige visuelle Rückmeldung bei fehlenden Werten
+
 ---
 
 ## 🏗 Architektur
@@ -343,16 +382,31 @@ Gruß,
 
 ### Prompt-Platzhalter-Syntax
 
-| Syntax | Beschreibung | Beispiel |
-|--------|--------------|----------|
-| `[Label]` | Platzhalter ohne Default | `[Thema]` |
-| `[Label=Default]` | Mit Standardwert | `[Sprache=Deutsch]` |
-| `[Label=Multi\nLine]` | MultiLine-Default (> 60 Zeichen) | `[Nachricht=Lange Nachricht...]` |
+| Syntax | Typ | Beschreibung | Beispiel |
+|--------|-----|--------------|----------|
+| `[Label]` | TEXT | Platzhalter ohne Default | `[Thema]` |
+| `[Label=Default]` | TEXT | Mit Standardwert | `[Sprache=Deutsch]` |
+| `[Label=Opt1,Opt2,Opt3]` | **DROPDOWN** | Dropdown mit Optionen (2+) | `[Sprache=Deutsch,Englisch,Französisch]` |
+| `[Label=Langer Text...]` | MULTILINE | Multi-Zeilen (> 60 Zeichen) | `[Nachricht=Sehr langer Text mit vielen Zeilen...]` |
+
+**🆕 Dropdown-Syntax (Neu!):**
+- **2+ Optionen durch Komma getrennt** → Automatisches Dropdown
+- Leere Option wird automatisch hinzugefügt
+- Perfekt für: Sprachen, Plattformen, Stile, Tonalitäten
+
+**Erweiterte Beispiele:**
+```
+[Plattform=LinkedIn,Twitter,Instagram,Facebook]
+[Tonalität=professionell,nahbar,enthusiastisch,sachlich]
+[Programmiersprache=Kotlin,Java,Python,JavaScript]
+[Ausgabeformat=Markdown,HTML,Plain Text,JSON]
+```
 
 **Wichtig:**
 - Duplikate (z.B. `[Thema]` mehrfach) werden nur 1x abgefragt
 - Erster Default gewinnt bei Konflikten: `[Thema=KI]` und `[Thema=AI]` → "KI" wird verwendet
 - Ungültige Syntax wird als normaler Text behandelt
+- **Dropdown-Erkennung**: Mindestens 2 nicht-leere Optionen durch Komma getrennt
 
 ---
 
@@ -399,9 +453,11 @@ data class UsageHistoryEntity(
 - Import von Community-Prompts
 
 **Erweiterte Platzhalter:**
-- Dropdown-Auswahl: `[Sprache:Deutsch|Englisch|Französisch]`
-- Pflichtfelder vs. Optional: `[Thema!]` vs. `[Beschreibung?]`
-- Platzhalter-Gruppen: `[Meta:Sprache]`, `[Content:Thema]`
+- ✅ **Dropdown-Auswahl: IMPLEMENTIERT!** `[Sprache=Deutsch,Englisch,Französisch]`
+- Pflichtfelder vs. Optional: `[Thema!]` vs. `[Beschreibung?]` (geplant)
+- Platzhalter-Gruppen: `[Meta:Sprache]`, `[Content:Thema]` (geplant)
+- Verschachtelte Platzhalter: `[Titel=[Thema] in [Sprache]]` (geplant)
+- Bedingte Platzhalter: `[?Premium:ExtraInfo]` (nur wenn Premium) (geplant)
 
 **AI-Integration:**
 - Direkte Integration mit ChatGPT/Claude/etc. APIs
@@ -410,6 +466,80 @@ data class UsageHistoryEntity(
 **Collaborative Features:**
 - Prompts teilen mit QR-Code
 - Community-Marketplace für Prompts
+
+### 💡 Innovative Zukünftige Features
+
+**Prompt-Historie mit Wiederverwendung:**
+- Speichert letzte ausgefüllte Werte pro Prompt
+- "Letzte Werte wiederverwenden"-Button im Dialog
+- Verhindert wiederholtes Eingeben gleicher Daten
+- UsageHistoryEntity bereits im Code vorbereitet
+
+**View/Edit-Modus Trennung:**
+- ReadOnly-Ansicht beim ersten Öffnen eines Prompts
+- "Bearbeiten"-Button für Edit-Modus
+- Beim Speichern: Dialog "Als Version X.Y speichern" oder "Als neuer Prompt"
+- Verhindert versehentliche Änderungen
+
+**Quick Actions & Gestures:**
+- Swipe-to-Use: Nach rechts wischen → Sofort kopieren
+- Swipe-to-Favorite: Nach links wischen → Favorit toggle
+- Long-Press für Kontextmenü
+- Drag & Drop für Sortierung
+
+**Statistiken & Analytics:**
+- Dashboard mit meistgenutzten Prompts
+- Nutzungs-Trends über Zeit
+- Durchschnittliche Ausfüllzeit pro Prompt
+- Beliebteste Platzhalter-Werte
+
+**Voice Input Integration:**
+- Speech-to-Text für Platzhalter-Eingabe
+- Besonders nützlich für lange Texte
+- Mehrsprachige Erkennung
+- Hands-free Bedienung
+
+**Smart Templates:**
+- KI-generierte Prompt-Vorschläge basierend auf Kategorie
+- Template-Empfehlungen basierend auf Nutzung
+- Auto-Vervollständigung für Platzhalter
+
+**Backup & Sync:**
+- Auto-Backup in Cloud (Firebase/eigene API)
+- Geräte-übergreifende Synchronisation
+- Export/Import als JSON mit Versionierung
+- Offline-First-Architektur mit Sync
+
+**Prompt-Chains & Workflows:**
+- Verknüpfe mehrere Prompts zu einem Workflow
+- Output von Prompt A wird Input für Prompt B
+- Perfekt für komplexe Multi-Step-Prozesse
+- Visual Workflow-Editor
+
+**Prompt-Marketplace:**
+- Teile Prompts mit der Community
+- Browse & Download Community-Prompts
+- Bewertungs-System
+- Kategorien & Tags für Discovery
+
+**Erweiterte Platzhalter-Features:**
+- **Berechnete Platzhalter**: `[Wortanzahl=\{len([Text])}]`
+- **Datum/Zeit-Platzhalter**: `[Datum=heute]`, `[Zeit=jetzt]`
+- **System-Info**: `[OS]`, `[Gerät]`, `[App-Version]`
+- **Zufalls-Werte**: `[Random=1-100]`
+
+**Accessibility & Internationalisierung:**
+- Vollständige Übersetzung in mehrere Sprachen
+- Screen-Reader-Support
+- Hoher Kontrast-Modus
+- Schriftgrößen-Anpassung
+- RTL-Support für Arabisch/Hebräisch
+
+**Integration & Sharing:**
+- Direct-Share zu ChatGPT/Claude/Gemini Apps
+- Browser-Extension für Desktop-Synchronisation
+- API für Drittanbieter-Integration
+- Shortcuts/Tasker-Integration für Automation
 
 ---
 
