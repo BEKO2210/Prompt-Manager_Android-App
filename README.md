@@ -36,7 +36,8 @@ Eine moderne Android-App zum Verwalten, Anpassen und Nutzen von KI-Prompts mit d
     <img src="https://img.shields.io/badge/📦%20Download%20APK-v1.0-blue?style=for-the-badge&logo=android&logoColor=white" alt="Download APK">
   </a>
 </p>
-# Prompt Manager - Download v1.1 #NEW
+
+# Prompt Manager - Download v1.1 NEW
 
 <p align="center">
   <a href="https://github.com/BEKO2210/Prompt-Manager_Android-App/raw/main/APK/Prompt_Master_1_1.apk">
