@@ -91,7 +91,7 @@ Eine moderne Android-App zum Verwalten, Anpassen und Nutzen von KI-Prompts mit d
 
 ---
 
-## ✨ #Features
+## ✨ Features
 
 ### Kernfunktionalität
 
