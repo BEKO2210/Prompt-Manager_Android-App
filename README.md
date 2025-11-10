@@ -44,7 +44,7 @@ Eine moderne Android-App zum Verwalten, Anpassen und Nutzen von KI-Prompts mit d
     <img src="https://img.shields.io/badge/📦%20Download%20APK-v1.1-blue?style=for-the-badge&logo=android&logoColor=white" alt="Download APK">
   </a>
 </p>
-## 🧾 Changelog
+ 🧾 Changelog
 
 ### 📦 Version 1.1
 
