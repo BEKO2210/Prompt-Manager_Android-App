@@ -20,7 +20,9 @@ Eine moderne Android-App zum Verwalten, Anpassen und Nutzen von KI-Prompts mit d
 ---
 
 <p align="center">
+  
    # 📱 App Preview
+   
 </p>
 
 <p align="center">
