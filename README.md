@@ -1,7 +1,6 @@
 <p align="center">
-  <img src="https://github.com/BEKO2210/Prompt-Manager_Android-App/blob/main/assets/Logo.png" />
+  <img src="https://github.com/BEKO2210/Prompt-Manager_Android-App/blob/main/assets/Logo.png" height="150"/>
 </p>
-
 
 <p align="center">
   <img src="https://img.shields.io/badge/Kotlin-1.9.20-purple?logo=kotlin&logoColor=white" />
