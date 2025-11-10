@@ -19,7 +19,9 @@ Eine moderne Android-App zum Verwalten, Anpassen und Nutzen von KI-Prompts mit d
 
 ---
 
+<p align="center">
 ## 📱 App Preview
+</p>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/BEKO2210/Prompt-Manager_Android-App/main/assets/Live_preview%20(1).jpg" width="19%">
