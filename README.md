@@ -1,4 +1,9 @@
 <p align="center">
+  <img src="https://github.com/BEKO2210/Prompt-Manager_Android-App/blob/main/assets/Logo.png" />
+</p>
+
+
+<p align="center">
   <img src="https://img.shields.io/badge/Kotlin-1.9.20-purple?logo=kotlin&logoColor=white" />
   <img src="https://img.shields.io/badge/Jetpack%20Compose-UI-blue?logo=android&logoColor=white" />
   <img src="https://img.shields.io/badge/Room-Database-orange" />
