@@ -299,24 +299,21 @@ private fun PlaceholderInputField(
 
 /**
  * Zeigt Preview-Text mit farblicher Markierung der Platzhalter.
- * Rot = leer, Grün = gefüllt (dezent).
+ * Verwendet das Standard-Farbschema (rot=leer, grün=gefüllt).
  */
 @Composable
 private fun ColoredPreviewText(segments: List<PlaceholderParser.PreviewSegment>) {
+    // Nutzt das Standard-Farbschema
+    val colorScheme = PreviewColorScheme.default()
+
     val annotatedString = buildAnnotatedString {
         segments.forEach { segment ->
             if (segment.isPlaceholder) {
-                // Platzhalter: Rot wenn leer, Grün wenn gefüllt
+                val colors = getPreviewColors(segment.isFilled, colorScheme)
                 withStyle(
                     style = SpanStyle(
-                        background = if (segment.isFilled)
-                            Color(0x4000C853) // Dezentes Grün (alpha=25%)
-                        else
-                            Color(0x40F44336), // Dezentes Rot (alpha=25%)
-                        color = if (segment.isFilled)
-                            Color(0xFF00C853) // Dunkelgrün
-                        else
-                            Color(0xFFF44336) // Dunkelrot
+                        background = colors.background,
+                        color = colors.text
                     )
                 ) {
                     append(segment.text)
