@@ -32,7 +32,7 @@ Eine moderne Android-App zum Verwalten, Anpassen und Nutzen von KI-Prompts mit d
 
 ## 1.3
 <p align="center">
-  <img src="[https://github.com/BEKO2210/Prompt-Manager_Android-App/blob/main/assets/Live%201%20(7).jpg]" width="19%">
+  <img src="https://github.com/BEKO2210/Prompt-Manager_Android-App/blob/main/assets/Live%201%20(7).jpg" width="19%">
   <img src="https://raw.githubusercontent.com/BEKO2210/Prompt-Manager_Android-App/main/assets/Live_preview%20(3).jpg" width="19%">
   <img src="https://raw.githubusercontent.com/BEKO2210/Prompt-Manager_Android-App/main/assets/Live_preview%20(4).jpg" width="19%">
   <img src="https://raw.githubusercontent.com/BEKO2210/Prompt-Manager_Android-App/main/assets/Live_preview%20(5).jpg" width="19%">
