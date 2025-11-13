@@ -11,7 +11,7 @@
 </p>
 
 
-# Prompt Manager - Android App
+# Prompt Manager - Android App v1.3
 
 **Professioneller Prompt-Manager für Android mit dynamischen Platzhaltern**
 
@@ -89,6 +89,14 @@ Eine moderne Android-App zum Verwalten, Anpassen und Nutzen von KI-Prompts mit d
    • Saubere Trennung von UI & Logik  
    • Mockbar & testfreundlich  
 
+
+# Prompt Manager - Download v1.1 NEW
+
+<p align="center">
+  <a href="https://github.com/BEKO2210/Prompt-Manager_Android-App/blob/main/APK/Prompt%20Manager_1.3.apk">
+    <img src="https://img.shields.io/badge/📦%20Download%20APK-v1.1-blue?style=for-the-badge&logo=android&logoColor=white" alt="Download APK">
+  </a>
+</p>
 
 
 ## 📋 Inhaltsverzeichnis
