@@ -11,7 +11,11 @@
 </p>
 
 
-# Prompt Manager - Android App v1.3
+# Prompt Manager - Android App v1.4
+
+
+
+## Prompt Manager - Android App v1.3
 
 **Professioneller Prompt-Manager für Android mit dynamischen Platzhaltern**
 
