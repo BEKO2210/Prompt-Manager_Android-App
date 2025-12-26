@@ -13,7 +13,7 @@
 
 # Prompt Manager - Android App v1.4
 
-
+🧾 Changelog📦 Version 1.41.Visuelle Überarbeitung•Neues Farbschema: Eine moderne, professionelle Farbpalette wurde implementiert, um die visuelle Ästhetik zu verbessern.•Helles & Dunkles Theme: Die App unterstützt jetzt sowohl ein helles als auch ein dunkles Theme, um eine optimale Benutzererfahrung bei allen Lichtverhältnissen zu gewährleisten.•Verbesserte Typografie: Die Schriftarten und -größen wurden optimiert, um die Lesbarkeit und die visuelle Hierarchie zu verbessern.•Optimiertes Layout: Die Abstände und die Anordnung der UI-Elemente wurden überarbeitet, um eine aufgeräumte und intuitive Benutzeroberfläche zu schaffen.2."How-to"-Anleitung•Info-Button: Ein neuer Info-Button auf dem Hauptbildschirm bietet direkten Zugriff auf eine detaillierte Anleitung.•Anleitungs-Screen: Ein neuer Bildschirm erklärt alle wichtigen Funktionen der App, von der Erstellung von Prompts bis zur Verwendung von Platzhaltern.3.Technische Verbesserungen•Aktualisierte Abhängigkeiten: Die Gradle- und Jetpack Compose-Versionen wurden aktualisiert, um die Stabilität und Leistung zu verbessern.•Fehlerbehebungen: Diverse kleinere Fehler wurden behoben, um die allgemeine Stabilität der App zu verbessern.
 
 ## Prompt Manager - Android App v1.3
 
